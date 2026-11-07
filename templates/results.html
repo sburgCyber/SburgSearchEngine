@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if query %}{{ query }}{% else %}{{ category_label }}{% endif %} — Sburg Search</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="results-page">
+    <div class="bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+    </div>
+
+    <div class="container-wide">
+    
+        <header class="results-header">
+            <a href="/" class="logo-small">Sburg</a>
+            <form action="/search" method="get" class="search-form-inline" autocomplete="off">
+                <div class="search-wrapper">
+                    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" name="q" value="{{ query }}" placeholder="Search...">
+                    <select class="search-category" name="category" aria-label="Search category">
+                        <option value="all" {% if category == 'all' %}selected{% endif %}>All</option>
+                        <option value="ai" {% if category == 'ai' %}selected{% endif %}>AI</option>
+                    </select>
+                    <button type="submit">Search</button>
+                </div>
+            </form>
+        </header>
+        
+        <!-- Result count -->
+        <div class="result-meta">
+            <p class="result-count">{{ message }}</p>
+            {% if results %}
+            <p class="result-time">
+                {% if query %}Sorted by relevance · TF-IDF ranking{% else %}AI topics{% endif %}
+            </p>
+            {% endif %}
+        </div>
+
+        <!-- Results -->
+        {% if results %}
+            <div class="results">
+                {% for result in results %}
+                    <article class="result-item">
+                        <div class="result-url">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                            <span>{{ result.url }}</span>
+                        </div>
+                        <h2 class="result-title">
+                            <a href="{{ result.url }}" target="_blank" rel="noopener noreferrer">
+                                {{ result.filename.replace('.txt', '') }}
+                            </a>
+                        </h2>
+                       
+                        <p class="result-snippet">{{ result.snippet | safe }}</p>
+                        {% if query %}
+                        <div class="result-footer">
+                            <span class="result-score">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                Relevance: {{ result.score }}
+                            </span>
+                        </div>
+                        {% endif %}
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-results">
+                <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    <line x1="8" y1="11" x2="14" y2="11"></line>
+                </svg>
+                <h3>{% if category == 'ai' and not query %}No AI topics available{% else %}No results found{% endif %}</h3>
+                <p>{% if query %}Try different keywords or check your spelling.{% else %}Choose a category or enter a search term.{% endif %}</p>
+                <a href="/" class="back-home">← Back to search</a>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
