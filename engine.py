@@ -9,10 +9,11 @@ from flask import Flask, abort, jsonify, render_template, request, send_from_dir
 
 app = Flask(__name__)
 
-DATA_FOLDER = "data"
-INDEX_FILE = "inverted_index.json"
-WORD_COUNTS_FILE = "word_counts.json"
-URL_MAP_FILE = os.path.join("sburg search engine", "url_map.json")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_FOLDER = os.path.join(BASE_DIR, "data")
+INDEX_FILE = os.path.join(BASE_DIR, "inverted_index.json")
+WORD_COUNTS_FILE = os.path.join(BASE_DIR, "word_counts.json")
+URL_MAP_FILE = os.path.join(BASE_DIR, "sburg search engine", "url_map.json")
 
 with open(INDEX_FILE, "r", encoding="utf-8") as f:
     INVERTED_INDEX = json.load(f)
